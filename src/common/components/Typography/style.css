@@ -1,0 +1,11 @@
+.typography.typography__h1 {
+  font-size: 24px;
+  font-weight: 700;
+  color: #000;
+}
+
+.typography.typography__p {
+  font-size: 20px;
+  font-weight: 400;
+  color: #000;
+}

@@ -1,0 +1,10 @@
+.edit {
+  padding: 100px 0;
+}
+
+.edit__content {
+  padding: 0 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}

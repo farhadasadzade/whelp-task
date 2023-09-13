@@ -1,0 +1,38 @@
+button.primary {
+  padding: 10px;
+  background-color: orange;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+}
+
+button.primary:hover {
+  background-color: #ff8c00;
+}
+
+button.secondary {
+  padding: 10px;
+  background: none;
+  border-radius: 5px;
+  border: 1px solid black;
+  cursor: pointer;
+}
+
+button.primary:hover {
+  background-color: #ff8c00;
+}
+
+button.icon {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+button.icon img {
+  height: 32px;
+  width: 32px;
+}
+
+button.icon:hover {
+  transform: scale(1.1);
+}

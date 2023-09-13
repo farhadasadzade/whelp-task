@@ -1,0 +1,45 @@
+.header {
+  background-color: rgb(51, 0, 170);
+  padding: 20px 0px;
+}
+
+.header__content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header__logo {
+  color: #fff;
+  font-size: 32px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.header__user {
+  position: relative;
+  cursor: pointer;
+}
+
+.header__user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.header__user-avatar img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.header__user-status {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background-color: rgb(0, 204, 0);
+  border-radius: 50%;
+  border: 1px solid #fff;
+  right: 0;
+  bottom: 0;
+}
