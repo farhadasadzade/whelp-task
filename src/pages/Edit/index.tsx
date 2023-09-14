@@ -1,5 +1,4 @@
-import React from "react";
-import { useMutation } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useParams, useNavigate } from "react-router-dom";
@@ -18,60 +17,42 @@ const Edit = () => {
   const { id: userId } = useParams();
   const navigate = useNavigate();
 
-  const {
-    mutate: mutateGetUser,
-    isLoading: isGetLoading,
-    isSuccess: isGetSuccess,
-    data: userData,
-  } = useMutation(() => getUserById(Number(userId)));
-  const {
-    mutate: mutateUpdateUser,
-    isLoading: isUpdateLoading,
-    isSuccess: isUpdateSuccess,
-    isError: isUpdateError,
-  } = useMutation((user: User) => updateUser(user));
-
-  const onSubmitUpdateUser = (data: Pick<User, "email" | "name" | "phone">) => {
-    mutateUpdateUser({ ...userData, ...data } as User);
-  };
-
-  React.useEffect(() => {
-    mutateGetUser();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userId]);
-
-  React.useEffect(() => {
-    if (!isGetLoading && isGetSuccess) {
-      methods.reset({
-        name: userData?.name,
-        email: userData?.email,
-        phone: userData?.phone,
-      });
+  const { data: userData } = useQuery(
+    "userById",
+    () => getUserById(Number(userId)),
+    {
+      onSuccess: () => {
+        methods.reset({
+          name: userData?.name,
+          email: userData?.email,
+          phone: userData?.phone,
+        });
+      },
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isGetSuccess, isGetLoading]);
-
-  React.useEffect(() => {
-    if (!isUpdateLoading) {
-      if (isUpdateSuccess) {
+  );
+  const { mutate: mutateUpdateUser } = useMutation(
+    (user: User) => updateUser(user),
+    {
+      onError: () => {
+        Toast.fire({
+          icon: "error",
+          title: "Xəta baş verdi!",
+        });
+      },
+      onSuccess: () => {
         Toast.fire({
           icon: "success",
           title: "İstifadəçi yaradıldı!",
         });
 
         navigate("/", { replace: true });
-        return;
-      }
-
-      if (isUpdateError) {
-        Toast.fire({
-          icon: "error",
-          title: "Xəta baş verdi!",
-        });
-      }
+      },
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isUpdateSuccess, isUpdateLoading]);
+  );
+
+  const onSubmitUpdateUser = (data: Pick<User, "email" | "name" | "phone">) => {
+    mutateUpdateUser({ ...userData, ...data } as User);
+  };
 
   return (
     <div className="edit">

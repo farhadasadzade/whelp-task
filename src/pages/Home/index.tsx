@@ -1,6 +1,7 @@
 import React from "react";
-import { useMutation } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import { useForm } from "react-hook-form";
+import { v4 as uuid } from "uuid";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Typography, Input, Button, Modal, Toast } from "@common/components";
 import { getUsers, createUser, deleteUser } from "@common/api";
@@ -16,6 +17,7 @@ const Home = () => {
     reValidateMode: "onChange",
     mode: "onSubmit",
   });
+  const [users, setUsers] = React.useState<IUser[]>([]);
   const [seacrhTerm, setSearchTerm] = React.useState("");
   const [isCreateModalVisible, setIsCreateModalVisible] = React.useState(false);
   const [isDeleteModalVisible, setIsDeleteModalVisible] = React.useState(false);
@@ -24,23 +26,43 @@ const Home = () => {
   >(null);
   const debauncedSearchTerm = useDebounce(seacrhTerm, 300);
 
-  const {
-    data: users,
-    isLoading: isUsersFetching,
-    mutate: mutateGetUsers,
-  } = useMutation("users", getUsers);
-  const {
-    isSuccess: isCreateSuccess,
-    isLoading: isCreateLoading,
-    isError: isCreateError,
-    mutate,
-  } = useMutation((newUser: IUser) => createUser(newUser));
-  const {
-    mutate: mutateDelete,
-    isLoading: isDeleteLoading,
-    isError: isDeleteError,
-    isSuccess: iseDeleteSuccess,
-  } = useMutation((id: number) => deleteUser(id));
+  const { isFetching: isUsersFetching } = useQuery("users", getUsers, {
+    onSuccess: (data) => setUsers(data),
+  });
+  const { mutate } = useMutation((newUser: IUser) => createUser(newUser), {
+    onError: () => {
+      Toast.fire({
+        icon: "error",
+        title: "Xəta baş verdi!",
+      });
+    },
+    onSuccess: (data) => {
+      Toast.fire({
+        icon: "success",
+        title: "İstifadəçi yaradıldı!",
+      });
+
+      onCloseCreateModal();
+      setUsers([data, ...users]);
+    },
+  });
+  const { mutate: mutateDelete } = useMutation((id: number) => deleteUser(id), {
+    onError: () => {
+      Toast.fire({
+        icon: "error",
+        title: "Xəta baş verdi!",
+      });
+    },
+    onSuccess: () => {
+      Toast.fire({
+        icon: "success",
+        title: "İstifadəçi silindi!",
+      });
+
+      setUsers(users.filter((user: IUser) => user.id !== selectedUserToDelete));
+      onCloseDeleteModal();
+    },
+  });
 
   const filteredData: IUser[] = useSearch(
     users,
@@ -64,8 +86,7 @@ const Home = () => {
   const onSubmitCreateUser = (
     data: Pick<IUser, "email" | "name" | "phone">
   ) => {
-    mutate(data as IUser);
-    onCloseCreateModal();
+    mutate({ id: Number(uuid()), ...data } as IUser);
   };
 
   const handleDeleteUser = (id: number) => {
@@ -79,58 +100,8 @@ const Home = () => {
   };
 
   const submitDeleteUser = () => {
-    onCloseDeleteModal();
     mutateDelete(selectedUserToDelete as number);
   };
-
-  React.useEffect(() => {
-    if (!isCreateLoading) {
-      if (isCreateSuccess) {
-        Toast.fire({
-          icon: "success",
-          title: "İstifadəçi yaradıldı!",
-        });
-
-        mutateGetUsers();
-        return;
-      }
-
-      if (isCreateError) {
-        Toast.fire({
-          icon: "error",
-          title: "Xəta baş verdi!",
-        });
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isCreateLoading, isCreateSuccess, isCreateError]);
-
-  React.useEffect(() => {
-    if (!isDeleteLoading) {
-      if (iseDeleteSuccess) {
-        Toast.fire({
-          icon: "success",
-          title: "İstifadəçi silindi!",
-        });
-
-        mutateGetUsers();
-        return;
-      }
-
-      if (isDeleteError) {
-        Toast.fire({
-          icon: "error",
-          title: "Xəta baş verdi!",
-        });
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isDeleteLoading, isDeleteError, iseDeleteSuccess]);
-
-  React.useEffect(() => {
-    mutateGetUsers();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   return (
     <>
