@@ -15,7 +15,7 @@ const Home = () => {
   const methods = useForm({
     resolver: yupResolver(schema),
     reValidateMode: "onChange",
-    mode: "onSubmit",
+    mode: "onChange",
   });
   const [users, setUsers] = React.useState<IUser[]>([]);
   const [seacrhTerm, setSearchTerm] = React.useState("");
@@ -180,6 +180,7 @@ const Home = () => {
             htmlType="submit"
             type="primary"
             style={{ backgroundColor: "green" }}
+            disabled={!methods.formState.isValid}
           >
             <Typography variant="p" color="white">
               Yarat

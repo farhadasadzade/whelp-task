@@ -36,3 +36,11 @@ button.icon img {
 button.icon:hover {
   transform: scale(1.1);
 }
+
+button:disabled,
+button[disabled] {
+  border: 1px solid #999999;
+  background-color: #cccccc !important;
+  color: #666666;
+  cursor: not-allowed;
+}

@@ -9,6 +9,7 @@ interface IProps {
   onClick?: () => void;
   htmlType?: "submit" | "button" | "reset";
   style?: React.CSSProperties;
+  disabled?: boolean;
 }
 
 const Button: React.FC<IProps> = ({
@@ -17,9 +18,16 @@ const Button: React.FC<IProps> = ({
   onClick,
   htmlType,
   style,
+  disabled,
 }) => {
   return (
-    <button type={htmlType} onClick={onClick} className={type} style={style}>
+    <button
+      type={htmlType}
+      onClick={onClick}
+      className={type}
+      style={style}
+      disabled={disabled}
+    >
       {children}
     </button>
   );
